@@ -84,7 +84,11 @@ def get_cas_client(
     server_url = django_settings.CAS_SERVER_URL
     if server_url and request and server_url.startswith('/'):
         scheme = request.META.get("X-Forwarded-Proto", request.scheme)
-        server_url = scheme + "://" + request.META['HTTP_HOST'] + server_url
+        if request.META.get('HTTP_X_FORWARDED_HOST'):
+            host = request.META.get('HTTP_X_FORWARDED_HOST')
+        else:
+            host = request.META['HTTP_HOST']
+        server_url = scheme + "://" + host + server_url
     # assert server_url.startswith('http'), "settings.CAS_SERVER_URL invalid"
 
     if not django_settings.CAS_VERIFY_SSL_CERTIFICATE:
